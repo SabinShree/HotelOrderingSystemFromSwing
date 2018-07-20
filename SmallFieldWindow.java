@@ -1,6 +1,7 @@
 package NewOne;
 
 import NewOne.model.DishItemFileSystem;
+import javafx.util.Callback;
 
 import javax.swing.*;
 import javax.swing.border.Border;
@@ -12,6 +13,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.Random;
 
 public class SmallFieldWindow extends JPanel implements ActionListener {
     private JFrame frame;
@@ -46,7 +48,7 @@ public class SmallFieldWindow extends JPanel implements ActionListener {
         mainPanel.add(dishNumber);
 
         dishNumberfield = new JTextField();
-        dishNumberfield.setBounds(125, 68, 200, 25);
+        dishNumberfield.setBounds(125, 68, 200, 24);
         mainPanel.add(dishNumberfield);
 
         JLabel categoryJLabel = new JLabel("Category");
@@ -129,7 +131,6 @@ public class SmallFieldWindow extends JPanel implements ActionListener {
         clearButton.setBorder(BorderFactory.createLineBorder(new Color(76, 185, 82), 2, true));
         mainPanel.add(clearButton);
 
-
         frame.add(mainPanel);
         frame.setSize(414, 460);
         frame.setVisible(true);
@@ -147,10 +148,15 @@ public class SmallFieldWindow extends JPanel implements ActionListener {
             int priceInInt = Integer.parseInt(price);
 
             if (!validItemNumber(dishNumber)) {
-                JOptionPane.showMessageDialog(frame, "Number format is not correct", "Oh ! Boy", JOptionPane.ERROR_MESSAGE);
+                dishNumberfield.setBorder(new LineBorder(Color.RED, 1, true));
+//                JOptionPane.showMessageDialog(frame, "Number format is not correct", "Oh ! Boy", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             int dishNumberInInt = Integer.parseInt(dishNumber);
+            if (!checkId(dishNumberInInt)) {
+                return;
+            }
+
             if (dishNumber.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Dish number Text field is empty", "Check Dish Number", JOptionPane.ERROR_MESSAGE);
                 dishNumberfield.setBorder(new LineBorder(Color.RED, 1, true));
@@ -209,6 +215,18 @@ public class SmallFieldWindow extends JPanel implements ActionListener {
         for (char a : number.toCharArray()) {
             if (!Character.isDigit(a)) {
                 JOptionPane.showMessageDialog(this, "Number shouldn't be Letter. ", "Error ", JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean checkId(int id) {
+        Random random = new Random();
+        for (DishItem dishItem : DishItemFileSystem.getOurInstance().getDishItemArrayList()) {
+            if (dishItem.getDishNumber() == id) {
+                JOptionPane.showMessageDialog(this, "Dish number is already exists", "Check Dish Number", JOptionPane.WARNING_MESSAGE);
+                id = id + (random.nextInt(10));
                 return false;
             }
         }
